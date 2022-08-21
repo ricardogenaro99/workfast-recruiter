@@ -41,12 +41,10 @@ export function GlobalProvider({ children }) {
 					authId: userParam.uid,
 					email: userParam.email,
 				},
+				roleRef: "62eaaa833cdf431757494e68",
 			},
 		};
-		const { data } = await helpHttp().post(
-			`${API_USERS}/save-user`,
-			options,
-		);
+		const { data } = await helpHttp().post(`${API_USERS}/save-user`, options);
 		return data;
 	};
 
