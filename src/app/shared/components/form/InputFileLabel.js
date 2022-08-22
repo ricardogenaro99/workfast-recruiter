@@ -3,12 +3,11 @@ import styled from "styled-components";
 import {
 	ContainerErrors,
 	ContainerInputSelectLabelWithErrors,
-	ContainerInputTextAreaLabel
+	ContainerInputTextAreaLabel,
 } from "./StyledFormComponents";
 
 const InputFile = styled(ContainerInputTextAreaLabel)``;
 const InputFileLabel = ({
-	value,
 	name,
 	placeholder,
 	label,
