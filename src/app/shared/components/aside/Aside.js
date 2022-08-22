@@ -6,6 +6,7 @@ import { SiSpeedtest } from "react-icons/si";
 import styled from "styled-components";
 import { useGlobal } from "../../../contexts/globalContext";
 import { device } from "../../utils/generalBreakpoints";
+import { WORKFAST_IMAGE_WHITE } from "../../utils/generalConst";
 import NavLinkComponent from "./NavLinkComponent";
 
 const Container = styled.aside`
@@ -74,15 +75,10 @@ const Aside = () => {
 		const getData = async () => {
 			try {
 				const res = await getEnterpriseDb();
-				setEnterpriseImage(
-					res.details.image ||
-						"https://firebasestorage.googleapis.com/v0/b/workfast-f9c03.appspot.com/o/workfast%2Fworkfast-logo-white.jpg?alt=media&token=cf857536-c755-4159-ad04-a83d3e21bbd7",
-				);
+				setEnterpriseImage(res.details.image || WORKFAST_IMAGE_WHITE);
 			} catch (err) {
 				console.error(err);
-				setEnterpriseImage(
-					"https://firebasestorage.googleapis.com/v0/b/workfast-f9c03.appspot.com/o/workfast%2Fworkfast-logo-white.jpg?alt=media&token=cf857536-c755-4159-ad04-a83d3e21bbd7",
-				);
+				setEnterpriseImage(WORKFAST_IMAGE_WHITE);
 			}
 		};
 

@@ -73,8 +73,8 @@ const ConfigurarEmpresa = () => {
 		setClickSubmit(true);
 		const res = formIsValid(form);
 		if (res) {
-			setLoading(true);
 			try {
+				setLoading(true);
 				const urlFile = await uploadFile(file, "enterprises");
 				const optionsPost = {
 					body: {
@@ -83,7 +83,7 @@ const ConfigurarEmpresa = () => {
 					},
 				};
 				await helpHttp().post(`${API_ENTERPRISES}/save-details`, optionsPost);
-
+				setLoading(false);
 				setPopPup("Se guardo exitosamente!");
 				window.location.reload();
 			} catch (err) {

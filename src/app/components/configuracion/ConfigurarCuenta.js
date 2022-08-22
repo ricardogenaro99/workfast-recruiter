@@ -65,16 +65,23 @@ const ConfigurarCuenta = () => {
 		setClickSubmit(true);
 		const res = formIsValid(form);
 		if (res) {
-			setLoading(true);
-			const optionsPost = {
-				body: {
-					userId,
-					details: form,
-				},
-			};
-			await helpHttp().post(`${API_USERS}/save-details`, optionsPost);
-			setLoading(false);
-			setPopPup("Se guardo exitosamente!");
+			try {
+				setLoading(true);
+				const optionsPost = {
+					body: {
+						userId,
+						details: form,
+					},
+				};
+				await helpHttp().post(`${API_USERS}/save-details`, optionsPost);
+				setLoading(false);
+				setPopPup("Se guardo exitosamente!");
+				window.location.reload();
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoading(false);
+			}
 		}
 	};
 
