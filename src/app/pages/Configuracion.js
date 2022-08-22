@@ -1,11 +1,13 @@
 import ConfigurarCuenta from "../components/configuracion/ConfigurarCuenta";
-import { SectionTitle } from "../shared/templates";
+import ConfigurarEmpresa from "../components/configuracion/ConfigurarEmpresa";
+import { ContainerGapDefault } from "../shared/templates";
 
 const Configuracion = () => {
 	return (
-		<SectionTitle title="Configura los datos básicos de tu cuenta">
+		<ContainerGapDefault>
 			<ConfigurarCuenta />
-		</SectionTitle>
+			<ConfigurarEmpresa />
+		</ContainerGapDefault>
 	);
 };
 

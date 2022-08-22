@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { useGlobal } from "../../contexts/globalContext";
-import { API_USERS } from "../../endpoints/apis";
+import { API_ENTERPRISES } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
 import { useForm } from "../../hooks/useForm";
 import {
@@ -15,10 +15,10 @@ import { formIsValid, validateForm } from "../../shared/utils/generalFunctions";
 
 const initialForm = {
 	name: "",
-	lastname: "",
+	description: "",
 	city: "",
 	country: "",
-	email: "",
+	image: "",
 };
 
 const options = {
@@ -30,8 +30,8 @@ const options = {
 	],
 };
 
-const ConfigurarCuenta = () => {
-	const { setLoading, getUserDb, userId, setPopPup } = useGlobal();
+const ConfigurarEmpresa = () => {
+	const { setLoading, getEnterpriseDb, enterpriseId, setPopPup } = useGlobal();
 	const { form, handleChange, setForm } = useForm(initialForm);
 	const [error, setError] = useState(null);
 	const [clickSubmit, setClickSubmit] = useState(false);
@@ -40,7 +40,7 @@ const ConfigurarCuenta = () => {
 	useEffect(() => {
 		const getData = async () => {
 			try {
-				const data = await getUserDb();
+				const data = await getEnterpriseDb();
 				if (data) {
 					setForm(data.details);
 				}
@@ -68,11 +68,11 @@ const ConfigurarCuenta = () => {
 			setLoading(true);
 			const optionsPost = {
 				body: {
-					userId,
+					enterpriseId,
 					details: form,
 				},
 			};
-			await helpHttp().post(`${API_USERS}/save-details`, optionsPost);
+			await helpHttp().post(`${API_ENTERPRISES}/save-details`, optionsPost);
 			setLoading(false);
 			setPopPup("Se guardo exitosamente!");
 		}
@@ -85,30 +85,30 @@ const ConfigurarCuenta = () => {
 
 	return (
 		<SectionTitle
-			title="Configura los datos básicos de tu cuenta"
+			title="Configura los datos básicos de la empresa"
 			error={error?.statusText}
 		>
-			{userId && !error && (
+			{enterpriseId && !error && (
 				<FormDefault onSubmit={handleSubmit}>
 					<Fragment>
 						<InputLabel
-							label="Nombres"
+							label="Nombre"
 							name="name"
-							placeholder="Ingrese sus nombres"
+							placeholder="Ingrese el nombre de la empresa"
 							value={form.name}
 							onChange={handleChange}
 							formReview={formReview}
 						/>
 						<InputLabel
-							label="Apellidos"
-							name="lastname"
-							placeholder="Ingrese sus apellidos"
-							value={form.lastname}
+							label="Descripcion"
+							name="description"
+							placeholder="Ingrese la descripción de la empresa"
+							value={form.description}
 							onChange={handleChange}
 							formReview={formReview}
 						/>
 						<SelectLabel
-							label="Seleccione su País"
+							label="Seleccione el País de la empresa"
 							name={"country"}
 							options={options}
 							onChange={handleSelectChange}
@@ -116,7 +116,7 @@ const ConfigurarCuenta = () => {
 							formReview={formReview}
 						/>
 						<SelectLabel
-							label="Seleccione su Ciudad"
+							label="Seleccione la Ciudad de la empresa"
 							name={"city"}
 							options={options}
 							onChange={handleSelectChange}
@@ -133,4 +133,4 @@ const ConfigurarCuenta = () => {
 	);
 };
 
-export default ConfigurarCuenta;
+export default ConfigurarEmpresa;

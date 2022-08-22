@@ -94,7 +94,7 @@ const Job = () => {
 				};
 
 				const { data } = await helpHttp().post(
-					`${API_POSTULATES}/get-user-job`,
+					`${API_POSTULATES}/get-by-user-job`,
 					options,
 				);
 				setPostulate(data !== null);

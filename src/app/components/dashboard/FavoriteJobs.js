@@ -106,7 +106,7 @@ const FavoriteJobs = () => {
 			};
 
 			const res = await helpHttp().post(
-				`${API_FAVORITES}/unmatch-by-ids`,
+				`${API_FAVORITES}/unmatch-ids`,
 				options,
 			);
 

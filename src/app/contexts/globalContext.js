@@ -6,12 +6,12 @@ import {
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 	signInWithPopup,
-	signOut
+	signOut,
 } from "firebase/auth";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../config/firebase";
-import { API_USERS } from "../endpoints/apis";
+import { API_ENTERPRISES, API_USERS } from "../endpoints/apis";
 import { helpHttp } from "../helpers/helpHttp";
 import { pathAuth } from "../routes/Path";
 import { Loader } from "../shared/components";
@@ -27,8 +27,10 @@ export const useGlobal = () => {
 
 export function GlobalProvider({ children }) {
 	const [user, setUser] = useState();
+	const [enterprise, setEnterprise] = useState();
 	const [loading, setLoading] = useState(false);
 	const [userId, setUserId] = useState(null);
+	const [enterpriseId, setEnterpriseId] = useState(null);
 	const [popPup, setPopPup] = useState();
 	const userRoles = useRef([]);
 	const navigate = useNavigate();
@@ -48,8 +50,26 @@ export function GlobalProvider({ children }) {
 		return data;
 	};
 
+	const addEnterpriseDb = async (userRef) => {
+		const options = {
+			body: {
+				userRef,
+			},
+		};
+		const { data } = await helpHttp().post(
+			`${API_ENTERPRISES}/save-enterprise`,
+			options,
+		);
+		return data;
+	};
+
 	const getUserDb = async () => {
 		const { data } = await helpHttp().get(`${API_USERS}/${userId}`);
+		return data;
+	};
+
+	const getEnterpriseDb = async () => {
+		const { data } = await helpHttp().get(`${API_ENTERPRISES}/${enterpriseId}`);
 		return data;
 	};
 
@@ -60,7 +80,7 @@ export function GlobalProvider({ children }) {
 			},
 		};
 		const { data } = await helpHttp().post(
-			`${API_USERS}/get-user-email`,
+			`${API_USERS}/get-by-email`,
 			options,
 		);
 
@@ -69,27 +89,35 @@ export function GlobalProvider({ children }) {
 		return data;
 	};
 
+	const getEnterpriseDbByUser = async (userRef) => {
+		const options = {
+			body: {
+				userRef,
+			},
+		};
+		const { data } = await helpHttp().post(
+			`${API_ENTERPRISES}/get-by-user`,
+			options,
+		);
+		return data;
+	};
+
 	const signup = async (email, password) => {
 		setLoading(true);
 		await getUserDbByEmail(email);
 		await createUserWithEmailAndPassword(auth, email, password);
-		await addUserDb(auth.currentUser);
+		const dataUser = await addUserDb(auth.currentUser);
+		await addEnterpriseDb(dataUser._id);
 		await signOut(auth);
 	};
 
 	const login = async (email, password) => {
 		setLoading(true);
-		const data = await getUserDbByEmail(email);
+		const dataUser = await getUserDbByEmail(email);
 		await signInWithEmailAndPassword(auth, email, password);
-		setUserId(data._id);
-		// // if (data) {
-		// // 	if (userRoles.current.includes(USER_ROLE)) {
-		// // 		await signInWithEmailAndPassword(auth, email, password);
-		// // 		setUserId(data._id);
-		// // 	} else {
-		// // 		throw new Error(MESSAGES.errorRole);
-		// // 	}
-		// // }
+		const dataEnterprise = await getEnterpriseDbByUser(dataUser._id);
+		setUserId(dataUser._id);
+		setEnterpriseId(dataEnterprise._id);
 	};
 
 	const logout = () => {
@@ -101,6 +129,8 @@ export function GlobalProvider({ children }) {
 	const resetStates = () => {
 		setUser(null);
 		setUserId(null);
+		setEnterprise(null);
+		setEnterpriseId(null);
 	};
 
 	const loginWithGoogle = () => {
@@ -114,33 +144,47 @@ export function GlobalProvider({ children }) {
 
 	useEffect(() => {
 		const unsubuscribe = onAuthStateChanged(auth, async (currentUser) => {
-			if (currentUser) {
-				try {
-					const data = await getUserDbByEmail(currentUser.email);
-					if (currentUser.emailVerified && data) {
-						if (userRoles.current.includes(USER_ROLE)) {
-							setUserId(data._id);
-							setUser(currentUser);
-						} else {
-							signOut(auth);
-							setPopPup(MESSAGES.errorRole);
-						}
-					} else {
-						signOut(auth);
-						sendVerification().then(() => resetStates());
-					}
-				} catch (err) {
-					const pathAuthRoute = location.pathname.split("/");
-					pathAuthRoute.includes("register")
-						? navigate(`${pathAuth}/register`)
-						: navigate(`${pathAuth}/login`);
-				}
-			} else {
+			if (!currentUser) {
 				resetStates();
+				return;
 			}
-			setLoading(false);
+
+			try {
+				const userData = await getUserDbByEmail(currentUser.email);
+
+				if (!(currentUser.emailVerified && userData)) {
+					signOut(auth);
+					sendVerification().then(() => resetStates());
+					return;
+				}
+
+				if (!userRoles.current.includes(USER_ROLE)) {
+					signOut(auth);
+					setPopPup(MESSAGES.errorRole);
+					return;
+				}
+
+				const enterpriseData = await getEnterpriseDbByUser(userData?._id);
+
+				if (!enterpriseData) return;
+				
+				setUserId(userData._id);
+				setUser(currentUser);
+				setEnterpriseId(enterpriseData._id);
+			} catch (err) {
+				const pathAuthRoute = location.pathname.split("/");
+				pathAuthRoute.includes("register")
+					? navigate(`${pathAuth}/register`)
+					: navigate(`${pathAuth}/login`);
+			}
 		});
-		return () => unsubuscribe();
+
+		const init = () => {
+			unsubuscribe();
+			setLoading(false);
+		};
+
+		return () => init();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -154,8 +198,11 @@ export function GlobalProvider({ children }) {
 				resetPassword,
 				user,
 				userId,
-				userRoles,
 				getUserDb,
+				userRoles,
+				enterprise,
+				enterpriseId,
+				getEnterpriseDb,
 				loading,
 				setLoading,
 				popPup,
