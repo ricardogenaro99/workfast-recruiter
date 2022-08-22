@@ -1,18 +1,20 @@
 import { useEffect, useId, useState } from "react";
+import styled from "styled-components";
 import {
 	ContainerErrors,
-	ContainerInputTextAreaLabel,
-	ContainerInputSelectLabelWithErrors
+	ContainerInputSelectLabelWithErrors,
+	ContainerInputTextAreaLabel
 } from "./StyledFormComponents";
 
-const InputLabel = ({
+const InputFile = styled(ContainerInputTextAreaLabel)``;
+const InputFileLabel = ({
+	value,
 	name,
-	type = "text",
 	placeholder,
 	label,
-	value,
 	onChange,
 	formReview,
+	accept = "image/png,image/jpeg",
 }) => {
 	const inputId = useId();
 	const [errors, setErrors] = useState([]);
@@ -26,17 +28,16 @@ const InputLabel = ({
 
 	return (
 		<ContainerInputSelectLabelWithErrors>
-			<ContainerInputTextAreaLabel>
+			<InputFile>
 				<label htmlFor={inputId}>{label}</label>
 				<input
 					id={inputId}
-					type={type}
+					type="file"
 					placeholder={placeholder}
-					name={name}
-					value={value}
-					onChange={onChange}
+					onChange={(e) => onChange(e.target.files[0])}
+					accept={accept}
 				/>
-			</ContainerInputTextAreaLabel>
+			</InputFile>
 			{errors.length !== 0 && (
 				<ContainerErrors>
 					{errors.map((error, i) => (
@@ -50,4 +51,4 @@ const InputLabel = ({
 	);
 };
 
-export default InputLabel;
+export default InputFileLabel;

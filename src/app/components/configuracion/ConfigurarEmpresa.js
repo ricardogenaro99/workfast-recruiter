@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { uploadFile } from "../../../config/firebase";
 import { useGlobal } from "../../contexts/globalContext";
 import { API_ENTERPRISES } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
@@ -7,7 +8,9 @@ import {
 	ButtonPrimaryPurple,
 	ControlGrid,
 	FormDefault,
-	InputLabel
+	InputFileLabel,
+	InputLabel,
+	TextAreaLabel
 } from "../../shared/components";
 import SelectLabel from "../../shared/components/form/SelectLabel";
 import { SectionTitle } from "../../shared/templates";
@@ -36,6 +39,7 @@ const ConfigurarEmpresa = () => {
 	const [error, setError] = useState(null);
 	const [clickSubmit, setClickSubmit] = useState(false);
 	const [formReview, setFormReview] = useState([]);
+	const [file, setFile] = useState();
 
 	useEffect(() => {
 		const getData = async () => {
@@ -54,6 +58,11 @@ const ConfigurarEmpresa = () => {
 	}, []);
 
 	useEffect(() => {
+		handleChange({ target: { name: "image", value: file?.name || "" } });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [file]);
+
+	useEffect(() => {
 		if (clickSubmit) {
 			setFormReview(validateForm(form));
 		}
@@ -61,20 +70,27 @@ const ConfigurarEmpresa = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
 		setClickSubmit(true);
 		const res = formIsValid(form);
 		if (res) {
 			setLoading(true);
-			const optionsPost = {
-				body: {
-					enterpriseId,
-					details: form,
-				},
-			};
-			await helpHttp().post(`${API_ENTERPRISES}/save-details`, optionsPost);
-			setLoading(false);
-			setPopPup("Se guardo exitosamente!");
+			try {
+				const urlFile = await uploadFile(file, "enterprises");
+				const optionsPost = {
+					body: {
+						enterpriseId,
+						details: { ...form, image: urlFile },
+					},
+				};
+				await helpHttp().post(`${API_ENTERPRISES}/save-details`, optionsPost);
+
+				setPopPup("Se guardo exitosamente!");
+				window.location.reload();
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoading(false);
+			}
 		}
 	};
 
@@ -99,13 +115,19 @@ const ConfigurarEmpresa = () => {
 							onChange={handleChange}
 							formReview={formReview}
 						/>
-						<InputLabel
+						<TextAreaLabel
 							label="Descripcion"
 							name="description"
 							placeholder="Ingrese la descripción de la empresa"
 							value={form.description}
 							onChange={handleChange}
 							formReview={formReview}
+						/>
+						<InputFileLabel
+							label="Suba una imagen de la empresa"
+							onChange={setFile}
+							formReview={formReview}
+							value={form.image}
 						/>
 						<SelectLabel
 							label="Seleccione el País de la empresa"

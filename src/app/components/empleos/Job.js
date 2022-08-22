@@ -14,6 +14,7 @@ import { SectionTitle } from "../../shared/templates";
 import { device, size } from "../../shared/utils/generalBreakpoints";
 
 const gap = "40px";
+const sizeEnterprise = '80px'
 
 const Container = styled.article`
 	display: grid;
@@ -26,10 +27,21 @@ const Container = styled.article`
 			overflow: hidden;
 			min-height: 250px;
 			max-height: 400px;
+			position: relative;
 			img {
 				object-fit: cover;
-				width: 100%;
-				height: 100%;
+				&:nth-child(1) {
+					width: 100%;
+					height: 100%;
+				}
+				&:nth-child(2) {
+					position: absolute;
+					height: ${sizeEnterprise};
+					width: ${sizeEnterprise};
+					border-radius: 100%;
+					bottom: 10px;
+					right: 10px;
+				}
 			}
 		}
 
@@ -206,6 +218,7 @@ const Job = () => {
 							}
 							alt="job"
 						/>
+						<img src={jobDb.enterpriseRef.details.image} alt="enterprise" />
 					</section>
 					<section className="info-container">
 						<div className="info-left">

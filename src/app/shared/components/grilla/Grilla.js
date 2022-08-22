@@ -7,6 +7,7 @@ import { CustomPagination } from "./CustomPagination";
 const Container = styled.div`
 	height: 310px;
 	width: 100%;
+	background: var(--color-white);
 `;
 
 export const Grilla = ({
@@ -14,6 +15,7 @@ export const Grilla = ({
 	columns = [],
 	setSelectedRows,
 	children,
+	isDataLoad = false,
 }) => {
 	return (
 		<Container>
@@ -32,6 +34,7 @@ export const Grilla = ({
 				}}
 				hideFooterSelectedRowCount
 				disableSelectionOnClick
+				loading={isDataLoad}
 			/>
 			{children}
 		</Container>

@@ -11,7 +11,9 @@ import {
 import { CardDefault, CardDefaultStyle } from "./card/CardDefault";
 import { ControlGrid } from "./form/ControlGrid";
 import { FormDefault } from "./form/FormContainer";
+import InputFileLabel from "./form/InputFileLabel";
 import InputLabel from "./form/InputLabel";
+import TextAreaLabel from "./form/TextAreaLabel";
 import { Grilla } from "./grilla/Grilla";
 import Header from "./header/Header";
 import { CustomLinkFlexGap } from "./link/Link";
@@ -35,5 +37,7 @@ export {
 	Grilla,
 	ButtonChip,
 	CustomLinkFlexGap,
+	TextAreaLabel,
+	InputFileLabel,
 };
 

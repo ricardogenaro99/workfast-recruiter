@@ -1,6 +1,8 @@
 import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+
 import {
 	REACT_APP_FIREBASE_API_KEY,
 	REACT_APP_FIREBASE_APP_ID,
@@ -10,6 +12,8 @@ import {
 	REACT_APP_FIREBASE_PROJECT_ID,
 	REACT_APP_FIREBASE_STORAGE_BUCKET
 } from "../environment";
+
+import { v4 as uuid } from "uuid";
 
 const firebaseConfig = {
 	apiKey: REACT_APP_FIREBASE_API_KEY,
@@ -24,4 +28,11 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 export const analytics = getAnalytics(app);
+
+export const uploadFile = async (file, dir = "") => {
+	const storageRef = ref(storage, `${dir}/${uuid()}`);
+	await uploadBytes(storageRef, file);
+	return getDownloadURL(storageRef);
+};

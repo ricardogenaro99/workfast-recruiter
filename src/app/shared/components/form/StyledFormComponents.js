@@ -9,6 +9,7 @@ const styleDefault = `
 	min-height: 70px;
 	gap: var(--gap-default-XS);
 	justify-content: center;
+	background: var(--color-white);
 `;
 
 export const ContainerInputSelectLabelWithErrors = styled.div`
@@ -21,17 +22,22 @@ export const ContainerInputSelectLabelWithErrors = styled.div`
 	}
 `;
 
-export const ContainerInputLabel = styled.div`
+export const ContainerInputTextAreaLabel = styled.div`
 	${styleDefault}
 
 	label {
 		color: var(--color-grey);
 	}
 
-	input {
+	input,
+	textarea {
 		color: var(--color-black);
 		border: none;
 		outline: none;
+	}
+
+	textarea {
+		resize: vertical;
 	}
 `;
 

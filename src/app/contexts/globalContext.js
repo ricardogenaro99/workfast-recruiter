@@ -1,12 +1,10 @@
 import {
 	createUserWithEmailAndPassword,
-	GoogleAuthProvider,
 	onAuthStateChanged,
 	sendEmailVerification,
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
-	signInWithPopup,
-	signOut,
+	signOut
 } from "firebase/auth";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,11 +25,11 @@ export const useGlobal = () => {
 
 export function GlobalProvider({ children }) {
 	const [user, setUser] = useState();
-	const [enterprise, setEnterprise] = useState();
 	const [loading, setLoading] = useState(false);
 	const [userId, setUserId] = useState(null);
 	const [enterpriseId, setEnterpriseId] = useState(null);
 	const [popPup, setPopPup] = useState();
+	const [isConfComplete, setIsConfComplete] = useState(false);
 	const userRoles = useRef([]);
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -63,13 +61,13 @@ export function GlobalProvider({ children }) {
 		return data;
 	};
 
-	const getUserDb = async () => {
-		const { data } = await helpHttp().get(`${API_USERS}/${userId}`);
+	const getUserDb = async (id = userId) => {
+		const { data } = await helpHttp().get(`${API_USERS}/${id}`);
 		return data;
 	};
 
-	const getEnterpriseDb = async () => {
-		const { data } = await helpHttp().get(`${API_ENTERPRISES}/${enterpriseId}`);
+	const getEnterpriseDb = async (id = enterpriseId) => {
+		const { data } = await helpHttp().get(`${API_ENTERPRISES}/${id}`);
 		return data;
 	};
 
@@ -102,6 +100,12 @@ export function GlobalProvider({ children }) {
 		return data;
 	};
 
+	const handleConfComplete = async (_userId, _enterpriseId) => {
+		const userDb = await getUserDb(_userId);
+		const enterpriseDb = await getEnterpriseDb(_enterpriseId);
+		setIsConfComplete(userDb.isComplete && enterpriseDb.isComplete);
+	};
+
 	const signup = async (email, password) => {
 		setLoading(true);
 		await getUserDbByEmail(email);
@@ -129,13 +133,8 @@ export function GlobalProvider({ children }) {
 	const resetStates = () => {
 		setUser(null);
 		setUserId(null);
-		setEnterprise(null);
 		setEnterpriseId(null);
-	};
-
-	const loginWithGoogle = () => {
-		const googleProvider = new GoogleAuthProvider();
-		return signInWithPopup(auth, googleProvider);
+		setLoading(false);
 	};
 
 	const resetPassword = (email) => sendPasswordResetEmail(auth, email);
@@ -167,24 +166,22 @@ export function GlobalProvider({ children }) {
 				const enterpriseData = await getEnterpriseDbByUser(userData?._id);
 
 				if (!enterpriseData) return;
-				
+
 				setUserId(userData._id);
 				setUser(currentUser);
 				setEnterpriseId(enterpriseData._id);
+				handleConfComplete(userData._id, enterpriseData._id);
 			} catch (err) {
 				const pathAuthRoute = location.pathname.split("/");
 				pathAuthRoute.includes("register")
 					? navigate(`${pathAuth}/register`)
 					: navigate(`${pathAuth}/login`);
+			} finally {
+				setLoading(false);
 			}
 		});
 
-		const init = () => {
-			unsubuscribe();
-			setLoading(false);
-		};
-
-		return () => init();
+		return () => unsubuscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -194,13 +191,12 @@ export function GlobalProvider({ children }) {
 				login,
 				signup,
 				logout,
-				loginWithGoogle,
 				resetPassword,
+				isConfComplete,
 				user,
 				userId,
 				getUserDb,
 				userRoles,
-				enterprise,
 				enterpriseId,
 				getEnterpriseDb,
 				loading,

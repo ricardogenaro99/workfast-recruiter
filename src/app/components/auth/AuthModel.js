@@ -17,7 +17,8 @@ import { formIsValid, validateForm } from "../../shared/utils/generalFunctions";
 const Container = styled.div`
 	width: 100%;
 	height: 100vh;
-	background: #f3f6ff;
+	background-color: #f3f6ff;
+	background-image: var(--background-image);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
