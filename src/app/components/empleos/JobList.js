@@ -77,8 +77,7 @@ const JobList = () => {
 
 	return (
 		<SectionTitle
-			title={"Estos empleos se ajustan a tu perfil"}
-			subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe nobis omnis nisi, assumenda alias quasi sunt ducimus debitis id eius distinctio suscipit ut esse odit quam labore dolore quisquam doloremque!"
+			title={"Estos son tus publicaciones de empleos"}
 			actions={
 				<ButtonPrimaryWhite onClick={handleOpenModal}>
 					Agregar Empleo
