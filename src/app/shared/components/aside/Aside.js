@@ -58,10 +58,16 @@ const PerfilSection = styled.section`
 	justify-content: center;
 	img {
 		object-fit: cover;
-		width: 100%;
-		max-width: 140px;
-
+		height: 140px;
+		width: 140px;
 		border-radius: 100%;
+	}
+
+	@media ${device.tabletS} {
+		img {
+			height: 45px;
+			width: 45px;
+		}
 	}
 `;
 

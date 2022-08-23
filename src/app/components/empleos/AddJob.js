@@ -1,18 +1,19 @@
 import { Fragment, useEffect, useState } from "react";
 import { uploadFile } from "../../../config/firebase";
 import { useGlobal } from "../../contexts/globalContext";
-import { API_ENTERPRISES } from "../../endpoints/apis";
+import { API_JOBS } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
 import { useForm } from "../../hooks/useForm";
 import {
-	ButtonPrimaryPurple,
-	ControlGrid,
-	FormDefault,
-	InputFileLabel,
-	InputLabel,
-	TextAreaLabel
+  ButtonPrimaryPurple,
+  ControlGrid,
+  CustomModal,
+  FormDefault,
+  InputFileLabel,
+  InputLabel,
+  SelectLabel,
+  TextAreaLabel
 } from "../../shared/components";
-import SelectLabel from "../../shared/components/form/SelectLabel";
 import { SectionTitle } from "../../shared/templates";
 import { formIsValid, validateForm } from "../../shared/utils/generalFunctions";
 
@@ -22,6 +23,7 @@ const initialForm = {
 	city: "",
 	country: "",
 	image: "",
+	position: "",
 };
 
 const options = {
@@ -33,29 +35,12 @@ const options = {
 	],
 };
 
-const ConfigurarEmpresa = () => {
-	const { setLoading, getEnterpriseDb, enterpriseId, setPopPup } = useGlobal();
+const AddJob = ({ modalIsOpen, closeModal, addJobList }) => {
+	const { setLoading, enterpriseId, setPopPup } = useGlobal();
 	const { form, handleChange, setForm } = useForm(initialForm);
-	const [error, setError] = useState(null);
 	const [clickSubmit, setClickSubmit] = useState(false);
 	const [formReview, setFormReview] = useState([]);
 	const [file, setFile] = useState();
-
-	useEffect(() => {
-		const getData = async () => {
-			try {
-				const data = await getEnterpriseDb();
-				if (data) {
-					setForm(data.details);
-				}
-				setError(null);
-			} catch (e) {
-				setError({ statusText: `${e.name}: ${e.message}` });
-			}
-		};
-		getData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	useEffect(() => {
 		handleChange({ target: { name: "image", value: file?.name || "" } });
@@ -75,17 +60,17 @@ const ConfigurarEmpresa = () => {
 		if (res) {
 			try {
 				setLoading(true);
-				const urlFile = await uploadFile(file, "enterprises");
+				const urlFile = await uploadFile(file, "jobs");
 				const optionsPost = {
 					body: {
-						enterpriseId,
+						enterpriseRef: enterpriseId,
 						details: { ...form, image: urlFile },
 					},
 				};
-				await helpHttp().post(`${API_ENTERPRISES}/save-details`, optionsPost);
+				const {data} = await helpHttp().post(`${API_JOBS}/save-job`, optionsPost);
 				setLoading(false);
 				setPopPup("Se guardo exitosamente!");
-				window.location.reload();
+        addJobList(data)
 			} catch (err) {
 				console.error(err);
 			} finally {
@@ -100,17 +85,14 @@ const ConfigurarEmpresa = () => {
 	};
 
 	return (
-		<SectionTitle
-			title="Configura los datos básicos de la empresa"
-			error={error?.statusText}
-		>
-			{enterpriseId && !error && (
+		<CustomModal modalIsOpen={modalIsOpen} closeModal={closeModal}>
+			<SectionTitle title="Crear Empleo">
 				<FormDefault onSubmit={handleSubmit}>
 					<Fragment>
 						<InputLabel
 							label="Nombre"
 							name="name"
-							placeholder="Ingrese el nombre de la empresa"
+							placeholder="Ingrese un nombre para empleo"
 							value={form.name}
 							onChange={handleChange}
 							formReview={formReview}
@@ -118,20 +100,28 @@ const ConfigurarEmpresa = () => {
 						<TextAreaLabel
 							label="Descripcion"
 							name="description"
-							placeholder="Ingrese la descripción de la empresa"
+							placeholder="Ingrese una descripción para el empleo"
 							value={form.description}
 							onChange={handleChange}
 							formReview={formReview}
 						/>
+						<InputLabel
+							label="Puesto"
+							name="position"
+							placeholder="Ingrese el puesto del empleo"
+							value={form.position}
+							onChange={handleChange}
+							formReview={formReview}
+						/>
 						<InputFileLabel
-							label="Suba una imagen de la empresa"
+							label="Suba una imagen referente al empleo"
 							onChange={setFile}
 							formReview={formReview}
 							name="image"
 							value={form.image}
 						/>
 						<SelectLabel
-							label="Seleccione el País de la empresa"
+							label="Seleccione el País referente al empleo"
 							name={"country"}
 							options={options}
 							onChange={handleSelectChange}
@@ -139,7 +129,7 @@ const ConfigurarEmpresa = () => {
 							formReview={formReview}
 						/>
 						<SelectLabel
-							label="Seleccione la Ciudad de la empresa"
+							label="Seleccione la Ciudad referente al empleo"
 							name={"city"}
 							options={options}
 							onChange={handleSelectChange}
@@ -151,9 +141,9 @@ const ConfigurarEmpresa = () => {
 						<ButtonPrimaryPurple type="submit">Guardar</ButtonPrimaryPurple>
 					</ControlGrid>
 				</FormDefault>
-			)}
-		</SectionTitle>
+			</SectionTitle>
+		</CustomModal>
 	);
 };
 
-export default ConfigurarEmpresa;
+export default AddJob;

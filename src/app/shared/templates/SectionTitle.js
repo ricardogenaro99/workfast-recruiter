@@ -7,18 +7,34 @@ const Container = styled.section`
 	display: flex;
 	flex-direction: column;
 	gap: var(--gap-default-XL);
-	.section-title {
-		font-size: 30px;
-		font-weight: 600;
+
+	.controllers {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--gap-default-M);
+
+		.section-title {
+			font-size: 30px;
+			font-weight: 600;
+		}
+		.section-subtitle {
+			font-size: 24px;
+		}
+
+		.actions-container {
+			display: flex;
+			width: 100%;
+			flex-wrap: wrap;
+			gap: var(--gap-default-M);
+		}
 	}
-	.section-subtitle {
-		font-size: 24px;
-	}
+
 	margin: ${(props) => props.margin};
 `;
 const SectionTitle = ({
 	title,
 	subtitle,
+	actions,
 	children,
 	maxWidth = "none",
 	margin = "initial",
@@ -26,8 +42,14 @@ const SectionTitle = ({
 }) => {
 	return (
 		<Container maxWidth={maxWidth} margin={margin}>
-			{title && <h3 className="section-title">{title}</h3>}
-			{subtitle && <h4 className="section-subtitle">{subtitle}</h4>}
+			{(title || subtitle || actions) && (
+				<div className="controllers">
+					{title && <h3 className="section-title">{title}</h3>}
+					{subtitle && <p className="section-subtitle">{subtitle}</p>}
+					{actions && <div className="actions-container">{actions}</div>}
+				</div>
+			)}
+
 			{error ? <Alert message={error} /> : children}
 		</Container>
 	);

@@ -29,7 +29,7 @@ export function GlobalProvider({ children }) {
 	const [userId, setUserId] = useState(null);
 	const [enterpriseId, setEnterpriseId] = useState(null);
 	const [popPup, setPopPup] = useState();
-	const [isConfComplete, setIsConfComplete] = useState(false);
+	const [isConfComplete, setIsConfComplete] = useState();
 	const userRoles = useRef([]);
 	const navigate = useNavigate();
 	const location = useLocation();

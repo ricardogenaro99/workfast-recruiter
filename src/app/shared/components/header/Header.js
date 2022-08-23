@@ -35,8 +35,8 @@ const Header = () => {
 
 	return (
 		<Container>
-			<div>
-				<h1>WORKFAST</h1>
+			<div className="not-word-break">
+				<h1 className="not-word-break">WORKFAST</h1>
 				<div>
 					<AiOutlinePoweroff
 						onClick={logout}
