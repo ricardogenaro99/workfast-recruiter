@@ -1,3 +1,4 @@
+import parse from "html-react-parser";
 import { useId } from "react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import styled from "styled-components";
@@ -78,7 +79,7 @@ const CardJob = ({ job, removeJobList }) => {
 				`${API_JOBS}/delete-package-job`,
 				options,
 			);
-			removeJobList(_id)
+			removeJobList(_id);
 			console.log(res);
 		} catch (e) {
 			console.error({ statusText: `${e.name}: ${e.message}` });
@@ -100,7 +101,7 @@ const CardJob = ({ job, removeJobList }) => {
 					<AiFillDelete color="#EA2925" onClick={handleClickDelete} />
 				</div>
 			</div>
-			<ContentContainer>{details.description}</ContentContainer>
+			<ContentContainer>{parse(details.description)}</ContentContainer>
 			<LinkPrimaryPurple to={_id}>Conocer más...</LinkPrimaryPurple>
 		</Container>
 	);

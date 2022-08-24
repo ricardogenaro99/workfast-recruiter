@@ -13,6 +13,7 @@ import {
 import { SectionTitle } from "../../shared/templates";
 import { device, size } from "../../shared/utils/generalBreakpoints";
 import { WORKFAST_IMAGE_WHITE } from "../../shared/utils/generalConst";
+import parse from "html-react-parser";
 
 const gap = "40px";
 const sizeEnterprise = "80px";
@@ -216,9 +217,7 @@ const Job = () => {
 						<img src={jobDb.enterpriseRef.details.image} alt="enterprise" />
 					</section>
 					<section className="info-container">
-						<div className="info-left">
-							<p>{jobDb.details.description}</p>
-						</div>
+						<div className="info-left">{parse(jobDb.details.description)}</div>
 						<div className="info-right">
 							<span>
 								<b>Pulicado el:</b>{" "}
