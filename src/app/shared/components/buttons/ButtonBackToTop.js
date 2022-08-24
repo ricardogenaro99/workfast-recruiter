@@ -37,7 +37,7 @@ const ButtonBackToTop = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	};
 	return (
-		<Container onClick={handleClick}>
+		<Container onClick={handleClick} aria-label="Top">
 			<div className="arrow-up"></div>
 		</Container>
 	);

@@ -11,8 +11,8 @@ import {
 	FormDefault,
 	InputFileLabel,
 	InputLabel,
-	SelectLabel,
-	TextAreaLabel
+	RichText,
+	SelectLabel
 } from "../../shared/components";
 import { SectionTitle } from "../../shared/templates";
 import { formIsValid, validateForm } from "../../shared/utils/generalFunctions";
@@ -114,14 +114,19 @@ const AddJob = ({ modalIsOpen, closeModal, addJobList }) => {
 							onChange={handleChange}
 							formReview={formReview}
 						/>
-						<TextAreaLabel
+						<RichText
+							name="description"
+							onChange={handleChange}
+							formReview={formReview}
+						/>
+						{/* <TextAreaLabel
 							label="Descripcion"
 							name="description"
 							placeholder="Ingrese una descripción para el empleo"
 							value={form.description}
 							onChange={handleChange}
 							formReview={formReview}
-						/>
+						/> */}
 						<InputLabel
 							label="Puesto"
 							name="position"

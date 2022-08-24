@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const styleDefault = `
+export const styleDefault = `
 	display: flex;
 	flex-direction: column;
 	border: 1px solid var(--color-grey-ligth);

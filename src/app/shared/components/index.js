@@ -13,6 +13,7 @@ import { ControlGrid } from "./form/ControlGrid";
 import { FormDefault } from "./form/FormContainer";
 import InputFileLabel from "./form/InputFileLabel";
 import InputLabel from "./form/InputLabel";
+import RichText from "./form/RichText";
 import SelectLabel from "./form/SelectLabel";
 import TextAreaLabel from "./form/TextAreaLabel";
 import { Grilla } from "./grilla/Grilla";
@@ -43,5 +44,6 @@ export {
 	InputFileLabel,
 	CustomModal,
 	SelectLabel,
+	RichText,
 };
 
