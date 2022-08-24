@@ -5,14 +5,14 @@ import { API_JOBS } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
 import { useForm } from "../../hooks/useForm";
 import {
-  ButtonPrimaryPurple,
-  ControlGrid,
-  CustomModal,
-  FormDefault,
-  InputFileLabel,
-  InputLabel,
-  SelectLabel,
-  TextAreaLabel
+	ButtonPrimaryPurple,
+	ControlGrid,
+	CustomModal,
+	FormDefault,
+	InputFileLabel,
+	InputLabel,
+	SelectLabel,
+	TextAreaLabel
 } from "../../shared/components";
 import { SectionTitle } from "../../shared/templates";
 import { formIsValid, validateForm } from "../../shared/utils/generalFunctions";
@@ -42,6 +42,13 @@ const AddJob = ({ modalIsOpen, closeModal, addJobList }) => {
 	const [formReview, setFormReview] = useState([]);
 	const [file, setFile] = useState();
 
+	const resetStates = () => {
+		setForm(initialForm);
+		setClickSubmit(false);
+		setFormReview([]);
+		setFile();
+	};
+
 	useEffect(() => {
 		handleChange({ target: { name: "image", value: file?.name || "" } });
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,10 +74,14 @@ const AddJob = ({ modalIsOpen, closeModal, addJobList }) => {
 						details: { ...form, image: urlFile },
 					},
 				};
-				const {data} = await helpHttp().post(`${API_JOBS}/save-job`, optionsPost);
+				const { data } = await helpHttp().post(
+					`${API_JOBS}/save-job`,
+					optionsPost,
+				);
 				setLoading(false);
 				setPopPup("Se guardo exitosamente!");
-        addJobList(data)
+				addJobList(data);
+				resetStates();
 			} catch (err) {
 				console.error(err);
 			} finally {
@@ -85,7 +96,13 @@ const AddJob = ({ modalIsOpen, closeModal, addJobList }) => {
 	};
 
 	return (
-		<CustomModal modalIsOpen={modalIsOpen} closeModal={closeModal}>
+		<CustomModal
+			modalIsOpen={modalIsOpen}
+			closeModal={() => {
+				closeModal();
+				resetStates();
+			}}
+		>
 			<SectionTitle title="Crear Empleo">
 				<FormDefault onSubmit={handleSubmit}>
 					<Fragment>

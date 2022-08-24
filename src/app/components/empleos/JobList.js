@@ -60,7 +60,7 @@ const JobList = () => {
 		};
 
 		load();
-	}, [setLoading]);
+	}, [enterpriseId, setLoading]);
 
 	const handleOpenModal = () => {
 		setIsOpen(true);
@@ -73,6 +73,11 @@ const JobList = () => {
 	const addJobList = (job) => {
 		setJobsDb([...jobsDb, job]);
 		handleCloseModal();
+	};
+
+	const removeJobList = (id) => {
+		const tmp = jobsDb.filter((job) => job._id !== id);
+		setJobsDb(tmp);
 	};
 
 	return (
@@ -92,7 +97,7 @@ const JobList = () => {
 			/>
 			<Container>
 				{jobsDb.map((job, i) => (
-					<CardJob key={i} job={job} />
+					<CardJob key={i} job={job} removeJobList={removeJobList} />
 				))}
 			</Container>
 		</SectionTitle>

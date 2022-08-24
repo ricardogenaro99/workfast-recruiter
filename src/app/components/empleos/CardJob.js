@@ -1,12 +1,12 @@
-import { useEffect, useId, useState } from "react";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { useId } from "react";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import styled from "styled-components";
 import { useGlobal } from "../../contexts/globalContext";
-import { API_FAVORITES } from "../../endpoints/apis";
+import { API_JOBS } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
 import { CardDefaultStyle, LinkPrimaryPurple } from "../../shared/components";
 
-const sizeStar = "20px";
+const sizeIcon = "20px";
 
 const Container = styled(CardDefaultStyle)`
 	max-height: 300px;
@@ -22,15 +22,21 @@ const Container = styled(CardDefaultStyle)`
 			gap: 5px;
 			position: relative;
 			h2 {
-				padding-right: ${sizeStar};
+				padding-right: ${sizeIcon};
 			}
-			svg {
+
+			.controls-container {
+				display: flex;
+				flex-direction: column;
 				position: absolute;
 				top: 0;
 				right: 0;
-				cursor: pointer;
-				width: ${sizeStar};
-				height: ${sizeStar};
+				gap: var(--gap-default-XS);
+				svg {
+					cursor: pointer;
+					width: ${sizeIcon};
+					height: ${sizeIcon};
+				}
 			}
 		}
 	}
@@ -54,68 +60,30 @@ const ContentContainer = styled.div`
 	);
 `;
 
-const CardJob = ({ job }) => {
-	const { userId, setPopPup } = useGlobal();
-	const [favorite, setFavorite] = useState(false);
+const CardJob = ({ job, removeJobList }) => {
+	const { setLoading } = useGlobal();
 	const { details, enterpriseRef, _id } = job;
 
-	useEffect(() => {
-		const getUser = async () => {
-			try {
-				const options = {
-					body: {
-						userRef: userId,
-						jobRef: _id,
-					},
-				};
+	const handleClickEdit = () => {};
 
-				const { data } = await helpHttp().post(
-					`${API_FAVORITES}/is-match`,
-					options,
-				);
-				setFavorite(data);
-			} catch (e) {
-				console.error({ statusText: `${e.name}: ${e.message}` });
-			}
-		};
-		getUser();
-	}, [_id, userId]);
-
-	const handleClickFavorite = async () => {
+	const handleClickDelete = async () => {
 		try {
+			setLoading(true);
 			const options = {
 				body: {
-					userRef: userId,
-					jobRef: _id,
+					jobId: _id,
 				},
 			};
-			const { message } = await helpHttp().post(
-				`${API_FAVORITES}/match-user-job`,
+			const res = await helpHttp().post(
+				`${API_JOBS}/delete-package-job`,
 				options,
 			);
-			setPopPup(message);
-			setFavorite(!favorite);
-		} catch (err) {
-			setPopPup("Ocurrio un error inesperado");
-		}
-	};
-
-	const handleClickUnfavorite = async () => {
-		try {
-			const options = {
-				body: {
-					userRef: userId,
-					jobRef: _id,
-				},
-			};
-			const { message } = await helpHttp().post(
-				`${API_FAVORITES}/unmatch-user-job`,
-				options,
-			);
-			setPopPup(message);
-			setFavorite(!favorite);
-		} catch (err) {
-			setPopPup("Ocurrio un error inesperado");
+			removeJobList(_id)
+			console.log(res);
+		} catch (e) {
+			console.error({ statusText: `${e.name}: ${e.message}` });
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -127,11 +95,10 @@ const CardJob = ({ job }) => {
 					{details.city}, {details.country}
 				</span>
 				<h4>{enterpriseRef.details.name}</h4>
-				{favorite ? (
-					<AiFillStar color="orange" onClick={handleClickUnfavorite} />
-				) : (
-					<AiOutlineStar color="orange" onClick={handleClickFavorite} />
-				)}
+				<div className="controls-container">
+					<AiFillEdit color="var(--color-primary)" onClick={handleClickEdit} />
+					<AiFillDelete color="#EA2925" onClick={handleClickDelete} />
+				</div>
 			</div>
 			<ContentContainer>{details.description}</ContentContainer>
 			<LinkPrimaryPurple to={_id}>Conocer más...</LinkPrimaryPurple>
