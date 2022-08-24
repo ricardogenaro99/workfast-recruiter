@@ -5,7 +5,8 @@ import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
 import { CustomPagination } from "./CustomPagination";
 
 const Container = styled.div`
-	height: 310px;
+	height: ${(props) => props.height || "310px"};
+	max-height: 70vh;
 	width: 100%;
 	background: var(--color-white);
 `;
@@ -16,9 +17,10 @@ export const Grilla = ({
 	setSelectedRows,
 	children,
 	isDataLoad = false,
+	height,
 }) => {
 	return (
-		<Container>
+		<Container height={height}>
 			<DataGrid
 				rows={rows}
 				columns={columns}

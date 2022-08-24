@@ -15,7 +15,7 @@ const PostulateJobs = () => {
 	const [error, setError] = useState();
 
 	const columns = [
-		{ field: "enterprise", headerName: "Empresa", flex: 1, minWidth: 150 },
+		{ field: "enterprise", headerName: "Postulante", flex: 1, minWidth: 150 },
 		{
 			field: "job",
 			headerName: "Trabajo",
@@ -77,7 +77,6 @@ const PostulateJobs = () => {
 			minWidth: 150,
 		},
 		{ field: "datePostulate", headerName: "F. de solicitud", width: 170 },
-		{ field: "dateResponse", headerName: "F. de respuesta", width: 170 },
 	];
 
 	useEffect(() => {
@@ -140,10 +139,10 @@ const PostulateJobs = () => {
 
 	return (
 		<SectionTitle
-			title="Da un seguimiento a los empleos a los que postulaste"
+			title="Estas son la solicitudes de tus empleos publicados"
 			error={error?.statusText}
 		>
-			<Grilla rows={rows} columns={columns} />
+			<Grilla height='600px' rows={rows} columns={columns} />
 		</SectionTitle>
 	);
 };
