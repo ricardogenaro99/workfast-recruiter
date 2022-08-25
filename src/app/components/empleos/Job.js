@@ -1,19 +1,19 @@
 import dayjs from "dayjs";
+import parse from "html-react-parser";
 import React, { useEffect, useState } from "react";
-import { AiFillStar, AiOutlineStar, AiOutlineTrophy } from "react-icons/ai";
+import { AiOutlineStar, AiOutlineTrophy } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useGlobal } from "../../contexts/globalContext";
-import { API_FAVORITES, API_JOBS, API_POSTULATES } from "../../endpoints/apis";
+import { API_JOBS } from "../../endpoints/apis";
 import { helpHttp } from "../../helpers/helpHttp";
 import {
 	ButtonPrimaryPurple,
-	ButtonPrimaryWhite,
+	ButtonPrimaryWhite
 } from "../../shared/components";
 import { SectionTitle } from "../../shared/templates";
 import { device, size } from "../../shared/utils/generalBreakpoints";
 import { WORKFAST_IMAGE_WHITE } from "../../shared/utils/generalConst";
-import parse from "html-react-parser";
 
 const gap = "40px";
 const sizeEnterprise = "80px";
@@ -73,50 +73,10 @@ const Container = styled.article`
 const Job = () => {
 	const [jobDb, setJobDb] = useState();
 	const [error, setError] = useState(null);
-	const { userId, setLoading, setPopPup } = useGlobal();
+	const { userId, setLoading } = useGlobal();
 	const params = useParams();
-	const [favorite, setFavorite] = useState(false);
-	const [postulate, setPostulate] = useState(false);
 
 	useEffect(() => {
-		const getFavorite = async () => {
-			try {
-				const options = {
-					body: {
-						userRef: userId,
-						jobRef: params.id,
-					},
-				};
-
-				const { data } = await helpHttp().post(
-					`${API_FAVORITES}/is-match`,
-					options,
-				);
-				setFavorite(data);
-			} catch (e) {
-				console.error({ statusText: `${e.name}: ${e.message}` });
-			}
-		};
-
-		const getPostulate = async () => {
-			try {
-				const options = {
-					body: {
-						userRef: userId,
-						jobRef: params.id,
-					},
-				};
-
-				const { data } = await helpHttp().post(
-					`${API_POSTULATES}/get-by-user-job`,
-					options,
-				);
-				setPostulate(data !== null);
-			} catch (e) {
-				console.error({ statusText: `${e.name}: ${e.message}` });
-			}
-		};
-
 		const getData = async () => {
 			try {
 				const res = await helpHttp().get(`${API_JOBS}/${params.id}`);
@@ -137,8 +97,6 @@ const Job = () => {
 
 		const load = async () => {
 			setLoading(true);
-			await getFavorite();
-			await getPostulate();
 			await getData();
 			setLoading(false);
 		};
@@ -146,66 +104,10 @@ const Job = () => {
 		load();
 	}, [params.id, setLoading, userId]);
 
-	const handleClickFavorite = async () => {
-		try {
-			const options = {
-				body: {
-					userRef: userId,
-					jobRef: jobDb._id,
-				},
-			};
-			const { message } = await helpHttp().post(
-				`${API_FAVORITES}/match-user-job`,
-				options,
-			);
-			setPopPup(message);
-			setFavorite(!favorite);
-		} catch (err) {
-			setPopPup("Ocurrio un error inesperado");
-		}
-	};
-
-	const handleClickUnfavorite = async () => {
-		try {
-			const options = {
-				body: {
-					userRef: userId,
-					jobRef: jobDb._id,
-				},
-			};
-			const { message } = await helpHttp().post(
-				`${API_FAVORITES}/unmatch-user-job`,
-				options,
-			);
-			setPopPup(message);
-			setFavorite(!favorite);
-		} catch (err) {
-			setPopPup("Ocurrio un error inesperado");
-		}
-	};
-
-	const handleClickPostulate = async () => {
-		try {
-			const options = {
-				body: {
-					userRef: userId,
-					jobRef: jobDb._id,
-				},
-			};
-			const { message } = await helpHttp().post(
-				`${API_POSTULATES}/match-user-job`,
-				options,
-			);
-			setPopPup(message);
-			setPostulate(!postulate);
-		} catch (err) {
-			setPopPup("Ocurrio un error inesperado");
-		}
-	};
-
 	return (
 		<SectionTitle
 			title={jobDb?.details.name || ""}
+			subtitle="[Vista del postulante]"
 			maxWidth={size.laptopS}
 			margin="0 auto"
 			error={error?.statusText}
@@ -229,24 +131,13 @@ const Job = () => {
 							<span>
 								<b>Empresa:</b> {jobDb.enterpriseRef.details.name}
 							</span>
-							{favorite ? (
-								<ButtonPrimaryWhite onClick={handleClickUnfavorite}>
-									<AiFillStar />
-									Quitar de favoritos
-								</ButtonPrimaryWhite>
-							) : (
-								<ButtonPrimaryWhite onClick={handleClickFavorite}>
-									<AiOutlineStar />
-									Agregar a favoritos
-								</ButtonPrimaryWhite>
-							)}
-							<ButtonPrimaryPurple
-								onClick={handleClickPostulate}
-								className={postulate ? "disabled" : ""}
-								disabled={postulate}
-							>
+							<ButtonPrimaryWhite>
+								<AiOutlineStar />
+								Agregar a favoritos
+							</ButtonPrimaryWhite>
+							<ButtonPrimaryPurple>
 								<AiOutlineTrophy />
-								{postulate ? "Espera la respuesta" : "Enviar mi solicitud"}
+								Enviar mi solicitud
 							</ButtonPrimaryPurple>
 						</div>
 					</section>

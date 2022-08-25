@@ -11,6 +11,7 @@ const styleDefault = `
 	align-items: center;
 	gap: var(--gap-default-S);
 	outline: 1px solid var(--color-primary);
+	text-align: center;
 	
 	&:hover {
 		box-shadow: var(--color-primary) 0px 0px 8px 2px;

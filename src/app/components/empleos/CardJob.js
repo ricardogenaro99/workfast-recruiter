@@ -102,7 +102,7 @@ const CardJob = ({ job, removeJobList }) => {
 				</div>
 			</div>
 			<ContentContainer>{parse(details.description)}</ContentContainer>
-			<LinkPrimaryPurple to={_id}>Conocer más...</LinkPrimaryPurple>
+			<LinkPrimaryPurple to={_id}>Vista del postulante...</LinkPrimaryPurple>
 		</Container>
 	);
 };
